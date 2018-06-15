@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
+using static System.Console;
 
 namespace WordGuessGame
 {
@@ -19,69 +19,63 @@ namespace WordGuessGame
             | | | |  | |__/ |  \ | __ |  | |___ [__  [__  
             |_|_| |__| |  \ |__/ |__] |__| |___ ___] ___]
             ";
-            Console.WriteLine(title);
+            WriteLine(title);
 
             CreateAFile();
-            ViewFile();
-/*
             MenuScreen();
-*/
+            DeleteFileAtExit();
         }
 
         public static void MenuScreen()
         {
-            Console.WriteLine("Would you like to do something?");
-            Console.WriteLine("1. play the damn game!");
-            Console.WriteLine("2. view the word list");
-            Console.WriteLine("3. edit the word list");
-            Console.WriteLine("0. get outta here...");
-            Console.Write("whatcha gonna do? => ");
-            string userInput = Console.ReadLine();
+            WriteLine("Would you like to do something?");
+            /*
+                        Console.WriteLine("1. play the damn game!");
+            */
+            WriteLine("2. view the word list");
+            WriteLine("3. edit the list");
+            WriteLine("0. get outta here...");
 
-
-            try
-            {
-                byte selectedOption = Convert.ToByte(userInput);
-                HandleMenuInput(selectedOption);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("there seems to be an issue", e.Message);
-            }
+            Write("whatcha gonna do? => ");
+            string userInput = ReadLine();
+            byte selectedOption = Convert.ToByte(userInput);
+            Clear();
+            HandleMenuInput(selectedOption);
         }
 
         public static void HandleMenuInput(byte selectedOption)
         {
-            MenuScreen();
             try
             {
-                if (selectedOption == 1)
+                /*if (selectedOption == 1)
                 {
-                    // add function call for playing the game
-                }
+                    // add method call of game logic
+
+                }*/
 
                 if (selectedOption == 2)
                 {
-                    // add function call for viewing the list
+                    ViewWords();
                 }
 
                 if (selectedOption == 3)
                 {
-                    // add function to edit the word list
+                    EditFileMenu();
                 }
 
                 if (selectedOption == 0)
                 {
-                    Console.WriteLine("later, gator");
+                    WriteLine("later, gator");
                 }
                 if (selectedOption >= 4)
                 {
-                    Console.WriteLine("please enter a number from the list");
+                    WriteLine("please enter a number from the list");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("i think you made a mistake", e.Message);
+                WriteLine($@"i think you made a mistake
+                    {e.Message}");
             }
         }
 
@@ -98,80 +92,164 @@ namespace WordGuessGame
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                WriteLine(e.Message);
             }
         }
-   
-        public static void ViewFile()
-        {         
+
+        public static string[] ConvertTextFileToStringArray()
+        {
+            string[] wordsArray = File.ReadAllLines("../../WordList.txt");
+            return wordsArray;
+        }
+
+        public static void ViewWords()
+        {
+            string[] wordStrings = ConvertTextFileToStringArray();
+
+            foreach (string word in wordStrings)
+            {
+                WriteLine(word);
+            }
+            WriteLine("0. return to main menu");
+            string userInput = ReadLine();
+            if (userInput == "0")
+            {
+                Clear();
+                MenuScreen();
+            }
+
+            if (userInput != "0")
+            {
+                Clear();
+                ViewWords();
+            }
+        }
+
+        public static void EditFileMenu()
+        {
+            string[] seeingPurpose = ConvertTextFileToStringArray();
+            foreach (string word in seeingPurpose) { WriteLine(word);}
             try
             {
-                // counter to prove that file is being read
-                int counter = 0;
-                // prints out the words from the file
-                string line;
-                // reading the file
-                StreamReader file = new StreamReader("../../WordList.txt");
-                // while there are still words in the file per line, display it.
-                while ((line = file.ReadLine()) != null)
-                {
-                    Console.WriteLine(line);
-                    // updating counter to display correct amt of lines in the file
-                    counter++;
-                }
+                WriteLine("1. add a word");
+                WriteLine("2. delete a word");
+                WriteLine("0. back to main menu");
 
-                file.Close();
-                Console.WriteLine("there are {0} words in this list", counter);
-                Console.ReadLine();
+                string viewOptSelected = ReadLine();
+                byte selectedOption = Convert.ToByte(viewOptSelected);
+                HandleSelectedEditOption(selectedOption);
             }
             catch (Exception e)
             {
-                Console.WriteLine("something went wrong");
-                Console.WriteLine(e.Message);
+                WriteLine($@"something went wrong
+                   {e.Message}");
             }
         }
 
-        public static string[] ConvertTextFileToString()
-        {
-            string filler = "";
-            string words = "";
-            StreamReader file = new StreamReader("../../WordList.txt");
-            while ((filler = file.ReadLine()) != null)
-            {
-                words = filler + " ";
-            }
-
-            string[] wordArray = words.Split();
-            return wordArray;
-        }
-
-        public static void GetUserWord()
+        public static void HandleSelectedEditOption(byte viewOptSelected)
         {
             try
             {
-                Console.WriteLine("please enter the word you would like to add...");
-                string newWord = Console.ReadLine().ToLower();
-                if (newWord.Contains(" ") || newWord == null)
+                if (viewOptSelected == 1)
                 {
-                    Console.WriteLine("please enter a single word");
-                    GetUserWord();
+                    AddUserWord();
+                }
+
+                if (viewOptSelected == 2)
+                {
+                    DeleteAWord();
+                }
+
+                if (viewOptSelected == 0)
+                {
+                    Clear();
+                    MenuScreen();
+                }
+            }
+            catch (Exception e)
+            {
+                WriteLine($@"invalid input selected
+                {e.Message}");
+            }
+        }
+
+        public static void AddUserWord()
+        {
+            try
+            {
+                WriteLine("please enter the word you would like to add...");
+                var newWord = ReadLine()?.ToLower();
+                if (newWord != null && (newWord.Contains(" ") || newWord == null))
+                {
+                    WriteLine("please enter a single word");
+                    AddUserWord();
                 }
 
                 AddUserWord(newWord);
             }
             catch (Exception e)
             {
-                Console.WriteLine("i think you made a mistake", e.Message);
+                WriteLine($@"you might'ave made a mistake
+                {e.Message}");
             }
         }
 
         public static string AddUserWord(string userWord)
-        {
-            using (StreamWriter sw = File.AppendText("../../WordList.txt"))
+        {   
+            TextWriter txtw = new StreamWriter("../../WordList.txt", true);
+            try
             {
-                sw.WriteLine(userWord);
-            } 
-            return $"your new word, {userWord}, had been successfully added..."
+                txtw.WriteLine(userWord);
+                txtw.Close();
+                return $"your new word, {userWord}, has been successfully added...";
+            }
+            catch (Exception e)
+            {
+                WriteLine("errrrmm.....");
+                return e.Message;
+            }
         }
+
+        public static string[] DeleteAWord()
+        {
+            try
+            {
+                string[] wordsArr = ConvertTextFileToStringArray();
+                Write("alright, pick a word => ");
+                string deleteWord = ReadLine();
+
+                for (int i = 0; i < wordsArr.Length; i++)
+                {
+                    if (deleteWord != null && deleteWord.ToLower() == wordsArr[i])
+                    {
+                        string[] newArr = new string[wordsArr.Length - 1];
+                        wordsArr[i].Remove(i);
+                        wordsArr = newArr;
+                        return wordsArr;
+                    }
+
+                    if (!wordsArr.Contains(deleteWord))
+                    {
+                        WriteLine("sorry, try again");
+                        return DeleteAWord();
+                    }
+                }
+                return wordsArr;
+            }
+            catch (Exception e)
+            {
+                WriteLine($@"alright, thats not there obviously
+                                    {e.Message}");
+            }
+
+            return ConvertTextFileToStringArray();
+        }
+
+        public static void DeleteFileAtExit()
+        {
+            File.Delete("../../ WordList.txt");
+        }
+
+        // GameLogic
     }
 }

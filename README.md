@@ -4,11 +4,13 @@ WordGuessGame
 **Version**: 1.0.0
 
 ## Overview
-This application is a simple word guess game. 
-The user has to guess letters that are in the word given to them at random.
-When the user guesses the word sucesfully they get a win screen with 4 options.
-If the user runs out of guesses, they get a losing screen with 2 options.
-The game encourages play, and guessing.
+**NOT A GUESS GAME YET**  
+
+  This application is a simple word guess game.  
+  The user has to guess letters that are in the word given to them at random.  
+  When the user guesses the word sucesfully they get a win screen with 4 options.  
+  If the user runs out of guesses, they get a losing screen with 2 options.  
+  The game encourages play, and guessing.  
 
 ## Getting Started
 The following is required to run the program.
